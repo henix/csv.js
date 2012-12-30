@@ -2,6 +2,12 @@
 
 A simple CSV parser in JavaScript for the browser (and nodejs)
 
+## Features
+
+* Parse CSV to 2-dimension String array
+* Specify column names or use the first row as column names
+* Custom delimeter, quote character and row delimeter
+
 ## Example
 
 See test.js
@@ -14,23 +20,19 @@ contruct a CSVParser. A CSVParser hold some parser states.
 
 options is an object that can have 3 properties: 'delim', 'quote', 'rowdelim'
 
-### CSVParser.hasNext()
+### boolean CSVParser.hasNext()
 
-returns a boolean
-
-### CSVParser.nextRow()
-
-returns a String[]
+### String[] CSVParser.nextRow()
 
 ## High-level API
 
 For these APIs, see the javadoc in csv.js
 
-### CSV.parse(str options)
+### String[][] CSV.parse(String str, Object options)
 
-### CSV.parseOne(str, options)
+### String[] CSV.parseOne(String str, Object options)
 
-### CSV.bindColumns(rows, columns)
+### Object[] CSV.bindColumns(String[][] rows, String[] columns)
 
 If specified, use `columns` as column names. Otherwise use the first row.
 
