@@ -10,11 +10,11 @@ A simple CSV parser in JavaScript for the browser (and nodejs)
 
 ## Example
 
-See test.js
+See [test.js](https://github.com/henix/csv.js/blob/master/test.js)
 
 ## Low-level API
 
-### CSVParser(str, options)
+### CSVParser(String str, Object options)
 
 contruct a CSVParser. A CSVParser hold some parser states.
 
@@ -26,7 +26,7 @@ options is an object that can have 3 properties: 'delim', 'quote', 'rowdelim'
 
 ## High-level API
 
-For these APIs, see the javadoc in csv.js
+For these APIs, see the javadoc in [csv.js](https://github.com/henix/csv.js/blob/master/csv.js)
 
 ### String[][] CSV.parse(String str, Object options)
 
