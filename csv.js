@@ -1,3 +1,10 @@
+/**
+ * csv.js
+ *
+ * https://github.com/henix/csv.js
+ *
+ * License: MIT License
+ */
 var CSV = {
 	DefaultOptions: {
 		delim: ',',
