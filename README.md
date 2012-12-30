@@ -45,7 +45,11 @@ If specified, use `columns` as column names. Otherwise use the first row.
 
 	node test.js
 
-## Compatiblity
+## Performance Benchmark
+
+[CSV.js vs jquery-csv](http://jsperf.com/csv-parsing-jquery-csv-and-csv-js)
+
+## Compatibility
 
 csv.js can be used with:
 
