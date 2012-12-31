@@ -14,11 +14,23 @@ See [test.js](https://github.com/henix/csv.js/blob/master/test.js)
 
 ## Low-level API
 
-### CSVParser(String str, Object options)
+### CSV.CSVParser(String str, Object options)
 
-contruct a CSVParser. A CSVParser hold some parser states.
+Construct a CSVParser. A CSVParser hold some parser states.
 
-options is an object that can have 3 properties: 'delim', 'quote', 'rowdelim'
+`options` is an object that can have 3 properties: 'delim', 'quote', 'rowdelim'
+
+Example:
+
+```js
+var parser = new CSV.CSVParser('a\tb\tc', {delim:'\t',quote:'"',rowdelim:'\r\n'});
+while (parser.hasNext()) {
+	var row = parser.nextRow();
+	// do something with row
+}
+```
+
+Every time you call `nextRow`, the parser will parse next portion of input. This allows you parse only front part of a string with the remainder untouched. You can stop anywhere.
 
 ### boolean CSVParser.hasNext()
 
