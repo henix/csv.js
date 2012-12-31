@@ -5,6 +5,8 @@
  *
  * License: MIT License
  */
+(function() {
+
 var CSV = {
 	DefaultOptions: {
 		delim: ',',
@@ -12,8 +14,6 @@ var CSV = {
 		rowdelim: '\n'
 	}
 };
-
-(function() {
 
 function CSVSyntaxError(msg) {
 	this.message = msg;
@@ -227,9 +227,11 @@ if (typeof exports !== 'undefined') {
 		exports = module.exports = CSV;
 	}
 } else if (typeof define === 'function') {
-	define('CSV', function () {
+	define(function () {
 		return CSV;
 	});
+} else {
+	window.CSV = CSV;
 }
 
 })();
