@@ -38,7 +38,7 @@ Every time you call `nextRow`, the parser will parse next portion of input. This
 
 ## High-level API
 
-For these APIs, see the javadoc in [csv.js](https://github.com/henix/csv.js/blob/master/csv.js)
+All high-level APIs are implemented by the low-level API in a few lines. See bottom part of [csv.js](https://github.com/henix/csv.js/blob/master/csv.js)
 
 ### String[][] CSV.parse(String str, Object options)
 
