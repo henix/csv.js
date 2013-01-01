@@ -77,11 +77,11 @@ Use the following code if you want strict RFC4180 behavior:
 
 	CSV.DefaultOptions.rowdelim = '\r\n';
 
-## Implementation Details
+## Under the hood
 
 This is a PEG (Parsing Expression Grammar) parser, written in recursive descent style.
 
-The PEG I use is taken from [lpeg's homepage](http://www.inf.puc-rio.br/~roberto/lpeg/):
+The PEG I use is taken from [lpeg's homepage](http://www.inf.puc-rio.br/~roberto/lpeg/) (Lua code):
 
 ```lua
 field = '"' * ((lpeg.P(1) - '"') + lpeg.P'""')^0 * '"' +
