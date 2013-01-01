@@ -56,6 +56,7 @@ If specified, use `columns` as column names. Otherwise use the first row.
 ## Run test
 
 	node test.js
+	firefox test.htm
 
 ## Performance Benchmark
 
@@ -81,7 +82,7 @@ Use the following code if you want strict RFC4180 behavior:
 
 This is a PEG (Parsing Expression Grammar) parser, written in recursive descent style.
 
-The PEG I use is taken from [lpeg's homepage](http://www.inf.puc-rio.br/~roberto/lpeg/) (Lua code):
+The PEG I use is taken from [lpeg's homepage](http://www.inf.puc-rio.br/~roberto/lpeg/) (in Lua):
 
 ```lua
 field = '"' * ((lpeg.P(1) - '"') + lpeg.P'""')^0 * '"' +
