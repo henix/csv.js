@@ -59,7 +59,7 @@ If specified, use `columns` as column names. Otherwise use the first row.
 
 ## Performance Benchmark
 
-[CSV.js vs jquery-csv](http://jsperf.com/csv-parsing-jquery-csv-and-csv-js)
+[CSV.js vs jquery-csv](http://jsperf.com/csv-parsing-jquery-csv-and-csv-js/2)
 
 ## Compatibility
 
