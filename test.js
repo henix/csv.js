@@ -24,13 +24,15 @@ assert.deepEqual(CSV.parse('"1\n2"\n3'), [['1\n2'],['3']]);
 
 // " in value
 assert.deepEqual(CSV.parseOne('"1""2",3'), ['1"2', '3']);
+assert.deepEqual(CSV.parseOne('"""1""",3'), ['"1"', '3']);
 
 // not well formatted
 assert.deepEqual(CSV.parseOne('1"2,3'), ['1"2', '3']);
 
-// not well formatted 2
-assert.deepEqual(CSV.parseOne('"1,2,3'), ['"1', '2', '3']);
-
 // syntax error
+assert.throws(function() { CSV.parseOne('"1""'); }, CSV.CSVSyntaxError);
+
+assert.throws(function() { CSV.parseOne('"1,\n2"",3'); }, /line 2:/);
+
 assert.throws(function(){ CSV.parseOne('"1"2",3'); }, CSV.CSVSyntaxError);
 assert.throws(function(){ CSV.parse('"a\nb",c\n"1"2",3'); }, /line 3:/);

@@ -31,6 +31,9 @@ function CSVParser(str, options) {
 	if (options) {
 		options.delim = options.delim || CSV.DefaultOptions.delim;
 		options.quote = options.quote || CSV.DefaultOptions.quote;
+		if (options.quote.length != 1) {
+			throw new RangeError('options.quote should be only 1 char');
+		}
 		options.rowdelim = options.rowdelim || CSV.DefaultOptions.rowdelim;
 		this.options = options;
 	}
@@ -54,6 +57,9 @@ CSVParser.prototype.next = function(s) {
 
 CSVParser.prototype.ahead = function(s) {
 	if (this.pos < this.endpos) {
+		if (!s) {
+			return true;
+		}
 		var len = s.length;
 		if (this.str.substring(this.pos, this.pos + len) == s) {
 			return true;
@@ -62,51 +68,72 @@ CSVParser.prototype.ahead = function(s) {
 	return false;
 };
 
-CSVParser.prototype.nextAny = function() {
-	if (this.pos <= this.endpos) {
-		this.pos++;
-		return true;
+function countMatches(str, patt) {
+	var count = 0;
+	var i = str.indexOf(patt);
+	while (i > 0) {
+		count++;
+		i = str.indexOf(patt, i + patt.length);
 	}
-	return false;
-};
+	return count;
+}
 
-CSVParser.prototype.charInQuote = function(s) {
-	var mark = this.pos;
-	if (!this.ahead(this.options.quote)) {
-		if (this.nextAny()) {
-			if (this.str.charAt(this.pos - 1) == '\n') {
-				this.lineNo++;
-			}
-			return true;
-		}
-	} else if (this.next(this.options.quote + this.options.quote)) {
-		return true;
-	}
-	this.pos = mark;
-	return false;
-};
-
+/**
+ * quotedField: '"' * ((1 - '"') + P'""')^0 * '"'
+ */
 CSVParser.prototype.quotedField = function() {
 	var mark = this.pos;
 	if (!this.next(this.options.quote)) { this.pos = mark; return null; }
-	var begin = this.pos;
-	while (this.charInQuote()) ;
-	if (!this.next(this.options.quote)) { this.pos = mark; return null; }
-	return this.str.substring(begin, this.pos - 1).replace(this.options.quote + this.options.quote, this.options.quote);
+	var tmp = [];
+	var start = this.pos;
+	while (start < this.endpos) {
+		var end = this.str.indexOf(this.options.quote, start);
+		if (end < 0) {
+			throw new CSVSyntaxError('line ' + this.lineNo + ': missing close quote');
+		}
+		var part = this.str.substring(start, end);
+		this.lineNo += countMatches(part, '\n');
+		tmp.push(part);
+		if ((end + 1 < this.endpos) && (this.str[end + 1] == this.options.quote)) {
+			start = end + 2;
+			end = this.str.indexOf(this.options.quote, start);
+		} else {
+			this.pos = end + 1;
+			break;
+		}
+	}
+	return tmp.join(this.options.quote);
 };
 
+/**
+ * normalField: (1 - S(",\n"))^0
+ */
 CSVParser.prototype.normalField = function() {
 	var begin = this.pos;
-	while (!(this.ahead(this.options.delim) || this.ahead(this.options.rowdelim)) && this.nextAny()) ;
+	var idelim = this.str.indexOf(this.options.delim, begin);
+	if (idelim < 0) {
+		idelim = this.endpos;
+	}
+	var irowdelim = this.str.indexOf(this.options.rowdelim, begin);
+	if (irowdelim < 0) {
+		irowdelim = this.endpos;
+	}
+	this.pos = Math.min(idelim, irowdelim);
 	return this.str.substring(begin, this.pos);
 };
 
+/**
+ * nextField: quotedField + normalField
+ */
 CSVParser.prototype.nextField = function() {
 	var tmp = this.quotedField();
 	if (tmp !== null) return tmp;
 	return this.normalField();
 };
 
+/**
+ * nextRow_0: ',' * nextField
+ */
 CSVParser.prototype.nextRow_0 = function() {
 	var mark = this.pos;
 	if (!this.next(this.options.delim)) { this.pos = mark; return null; }
@@ -116,6 +143,8 @@ CSVParser.prototype.nextRow_0 = function() {
 };
 
 /**
+ * nextRow: nextField * (',' * nextField)^0 * (P'\n' + -1)
+ *
  * @return String[]
  * @throws CSVSyntaxError
  */
@@ -130,7 +159,10 @@ CSVParser.prototype.nextRow = function() {
 		ar.push(tmp);
 		tmp = this.nextRow_0();
 	}
-	if (!(this.next(this.options.rowdelim) || !this.ahead(''))) { throw new CSV.CSVSyntaxError('line ' + this.lineNo + ': ' + this.str.substring(Math.max(this.pos - 5, 0), this.pos + 5)); this.pos = mark; return null; }
+	if (!(this.next(this.options.rowdelim) || !this.ahead())) {
+		throw new CSVSyntaxError('line ' + this.lineNo + ': ' + this.str.substring(Math.max(this.pos - 5, 0), this.pos + 5));
+		this.pos = mark; return null;
+	}
 	if (this.str.charAt(this.pos - 1) == '\n') {
 		this.lineNo++;
 	}
@@ -141,7 +173,7 @@ CSVParser.prototype.nextRow = function() {
  * @return boolean
  */
 CSVParser.prototype.hasNext = function() {
-	return this.ahead('');
+	return this.ahead();
 };
 
 CSV.CSVSyntaxError = CSVSyntaxError;
@@ -151,7 +183,7 @@ CSV.CSVParser = CSVParser;
  * @return String[] or null
  */
 CSV.parseOne = function(str, options) {
-	var parser = new CSV.CSVParser(str, options);
+	var parser = new CSVParser(str, options);
 	if (parser.hasNext()) {
 		return parser.nextRow();
 	}
@@ -162,7 +194,7 @@ CSV.parseOne = function(str, options) {
  * @return String[][]
  */
 CSV.parse = function(str, options) {
-	var parser = new CSV.CSVParser(str, options);
+	var parser = new CSVParser(str, options);
 	var all = [];
 	while (parser.hasNext()) {
 		var ar = parser.nextRow();
