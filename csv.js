@@ -162,7 +162,7 @@ CSV.parseOne = function(str, options) {
  * @return String[][]
  */
 CSV.parse = function(str, options) {
-	var parser = new CSVParser(str, options);
+	var parser = new CSV.CSVParser(str, options);
 	var all = [];
 	while (parser.hasNext()) {
 		var ar = parser.nextRow();
