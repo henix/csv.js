@@ -24,6 +24,11 @@ function CSVSyntaxError(msg) {
 CSVSyntaxError.prototype = new Error();
 CSVSyntaxError.prototype.constructor = CSVSyntaxError;
 CSVSyntaxError.prototype.name = 'CSVSyntaxError';
+if (new Error().toString() == '[object Error]') { // IE 6 7
+	CSVSyntaxError.prototype.toString = function() {
+		return this.name + ': ' + this.message;
+	};
+}
 
 function CSVParser(str, options) {
 	this.str = str;
@@ -94,7 +99,7 @@ CSVParser.prototype.quotedField = function() {
 		var part = this.str.substring(start, end);
 		this.lineNo += countMatches(part, '\n');
 		tmp.push(part);
-		if ((end + 1 < this.endpos) && (this.str[end + 1] == this.options.quote)) {
+		if ((end + 1 < this.endpos) && (this.str.charAt(end + 1) == this.options.quote)) {
 			start = end + 2;
 			end = this.str.indexOf(this.options.quote, start);
 		} else {
