@@ -1,5 +1,17 @@
-var assert = require('assert');
-var CSV = require('./csv.js');
+if (typeof require !== 'undefined') {
+	assert = require('assert');
+	CSV = require('./csv.js');
+} else {
+	assert = QUnit.assert;
+}
+
+if (typeof test === 'undefined') {
+	test = function(str, func) {
+		func();
+	};
+}
+
+test("all", function() {
 
 // parse one row
 assert.deepEqual(CSV.parseOne('a,b,c'), ['a','b','c']);
@@ -36,3 +48,5 @@ assert.throws(function() { CSV.parseOne('"1,\n2"",3'); }, /line 2:/);
 
 assert.throws(function(){ CSV.parseOne('"1"2",3'); }, CSV.CSVSyntaxError);
 assert.throws(function(){ CSV.parse('"a\nb",c\n"1"2",3'); }, /line 3:/);
+
+});
