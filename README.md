@@ -89,3 +89,7 @@ field = '"' * ((lpeg.P(1) - '"') + lpeg.P'""')^0 * '"' +
 		(1 - lpeg.S',\n"')^0
 record = field * (',' * field)^0 * (lpeg.P'\n' + -1)
 ```
+
+## Links
+
+* [写了个简单的 javascript CSV parser](http://www.douban.com/note/255897820/)
